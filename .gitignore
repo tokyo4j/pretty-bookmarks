@@ -1,0 +1,5 @@
+dist
+node_modules
+pretty-bookmarks.zip
+server/.venv
+server/*-*-*_*-*-*

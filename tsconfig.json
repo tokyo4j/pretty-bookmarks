@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2021",
+    "types": ["firefox-webext-browser"],
+    "isolatedModules": true,
+    "resolveJsonModule": true
+  },
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": ["src/**/*.ts", "src/**/*.svelte"]
+}
