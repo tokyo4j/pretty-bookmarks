@@ -1,4 +1,4 @@
-import { imgToBlob, getImgAt } from "../misc";
+import { imgToBlob, getImgAt, downloadVideoAt } from "../misc";
 
 console.log("Pretty Bookmark's content script is loaded");
 
@@ -17,15 +17,19 @@ document.addEventListener("mousedown", (e) => {
 });
 
 browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg !== "request-clicked-img-element")
-    throw new Error("invalid message" + msg);
   if (!clickPos) return false;
 
-  getImgAt(clickPos.x, clickPos.y)
-    .then((img) => img && imgToBlob(img))
-    .then((blob) => sendResponse(blob));
+  if (msg === "request-clicked-img-element") {
+    getImgAt(clickPos.x, clickPos.y)
+      .then((img) => img && imgToBlob(img))
+      .then((blob) => sendResponse(blob));
+    return true;
+  } else if (msg === "download-clicked-video") {
+    downloadVideoAt(clickPos.x, clickPos.y);
+    return true;
+  }
 
-  return true;
+  return false;
 });
 
 export {};

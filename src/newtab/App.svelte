@@ -10,7 +10,7 @@
     getChildBookmarks,
   } from "../misc";
 
-  const exportImages = async () => {
+  async function exportImages() {
     const images = await db.images.toArray();
     const formData = new FormData();
     for (const { url, data } of images) formData.append(url, data);
@@ -19,9 +19,9 @@
       body: formData,
     });
     alert("Sent images to server");
-  };
+  }
 
-  const importImages = async () => {
+  async function importImages() {
     const event = await requestFileUpload();
     const target = event.target as HTMLInputElement;
     if (!target.files) return;
@@ -38,9 +38,9 @@
       const blob = await readFileAsBlob(file);
       db.images.put({ url: url, data: blob });
     }
-  };
+  }
 
-  const cleanImgs = async () => {
+  async function cleanImgs() {
     const getAllChildren = (parent: BookmarkTreeNode): BookmarkTreeNode[] =>
       parent.children
         ? parent.children!.map((bm) => getAllChildren(bm)).flat()
@@ -54,7 +54,7 @@
       .map((record) => record.url);
     db.images.bulkDelete(diff);
     console.log("Deleted images for:", diff);
-  };
+  }
 
   let clickState: { target: Bookmark; x: number; y: number } | undefined;
 </script>
@@ -97,12 +97,12 @@
           src={bm.node.children
             ? folderIcon
             : bm.img
-            ? bm.img
-            : bm.node.url
-            ? `https://www.google.com/s2/favicons?sz=32&domain=${
-                new URL(bm.node.url).origin
-              }`
-            : ""}
+              ? bm.img
+              : bm.node.url
+                ? `https://www.google.com/s2/favicons?sz=32&domain=${
+                    new URL(bm.node.url).origin
+                  }`
+                : ""}
           alt=""
         />
         <div

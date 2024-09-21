@@ -1,24 +1,26 @@
 import type { Bookmark, BookmarkTreeNode } from "./types";
 import db from "./db";
 
-export const requestFileUpload = () =>
-  new Promise<Event>((resolve, reject) => {
+export function requestFileUpload() {
+  return new Promise<Event>((resolve, reject) => {
     const el = document.createElement("input");
     el.type = "file";
     el.multiple = true;
     el.onchange = (e: Event) => resolve(e);
     el.click();
   });
+}
 
-export const readFileAsText = async (file: File) =>
-  new Promise<string>((resolve, reject) => {
+export function readFileAsText(file: File) {
+  return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
     reader.readAsText(file);
   });
+}
 
-export const readFileAsBlob = async (file: File) =>
-  new Promise<Blob>((resolve, reject) => {
+export async function readFileAsBlob(file: File) {
+  return new Promise<Blob>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () =>
       resolve(
@@ -28,11 +30,12 @@ export const readFileAsBlob = async (file: File) =>
       );
     reader.readAsArrayBuffer(file);
   });
+}
 
 // get child bookmarks from parent bookmark id, and merge them with images retrieved from DB
-export const getChildBookmarks = async (
+export async function getChildBookmarks(
   bookmarkId: string | null | undefined
-): Promise<Bookmark[]> => {
+): Promise<Bookmark[]> {
   const parent = bookmarkId
     ? (await browser.bookmarks.getSubTree(bookmarkId))[0]
     : (await browser.bookmarks.getTree())[0];
@@ -51,10 +54,10 @@ export const getChildBookmarks = async (
     (child, i) => ({ node: child, img: child.url && imgs[i] } as Bookmark)
   );
   return bookmarks;
-};
+}
 
-export const imgToBlob = (img: HTMLImageElement) =>
-  new Promise((resolve, reject) => {
+export function imgToBlob(img: HTMLImageElement) {
+  return new Promise((resolve, reject) => {
     const MAX_SIZE = 320;
 
     const canvas = document.createElement("canvas");
@@ -73,18 +76,20 @@ export const imgToBlob = (img: HTMLImageElement) =>
       else reject(new Error("Failed to convert image to Blob"));
     });
   }) as Promise<Blob>;
+}
 
-const loadImage = (src: string): Promise<HTMLImageElement> =>
-  new Promise((resolve, reject) => {
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
     const img = document.createElement("img");
     img.onload = () => resolve(img);
     img.onerror = (e) => reject(e);
     img.src = src;
   });
+}
 
-const getImgFromElement = async (
+async function getImgFromElement(
   el: Element
-): Promise<HTMLImageElement | null> => {
+): Promise<HTMLImageElement | null> {
   if (el instanceof HTMLImageElement) {
     return el;
   } else {
@@ -97,9 +102,9 @@ const getImgFromElement = async (
     if (url) return await loadImage(url);
     else return null;
   }
-};
+}
 
-export const getImgAt = async (x: number, y: number) => {
+export async function getImgAt(x: number, y: number) {
   const els = document.elementsFromPoint(x, y);
   console.log(`all the elements at (${x},${y})`, els);
 
@@ -111,4 +116,24 @@ export const getImgAt = async (x: number, y: number) => {
 
   if (imgs.length === 0) return null;
   else return imgs[0];
-};
+}
+
+export async function downloadVideoAt(x: number, y: number) {
+  const els = document.elementsFromPoint(x, y);
+  console.log(`all the elements at (${x},${y})`, els);
+
+  const video = els.find((e) => e.tagName === "VIDEO") as HTMLVideoElement;
+  if (!video) return null;
+  console.log(video);
+
+  const a = document.createElement("a");
+  a.href = video.src;
+  a.download = "";
+  a.click();
+}
+
+export function sleep(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
+}
