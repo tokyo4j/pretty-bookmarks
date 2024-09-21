@@ -21,14 +21,17 @@ app.add_middleware(
 @app.post("/upload")
 # def read_root(url: str = Form(...), file: UploadFile = File(...)):
 async def read_root(request: Request):
-    form_data = await request.form()
+    print("/upload received")
+    MAX_FILES = 100000
+    form_data = await request.form(max_fields=MAX_FILES, max_files=MAX_FILES)
     index = {}
     dirname = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     os.mkdir(dirname)
     for url, file in form_data.multi_items():
         ext = re.match(r"^image/(\w+)$", file.content_type)[1]
         filename = f"{uuid4()}.{ext}"
-        open(f"{dirname}/{filename}", "wb+").write(file.file.read())
+        with open(f"{dirname}/{filename}", "wb+") as f:
+            f.write(file.file.read())
         index[url] = filename
 
     open(f"{dirname}/index.json", "w+").write(json.dumps(index, indent=2))

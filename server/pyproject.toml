@@ -1,0 +1,14 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "python-multipart>=0.0.10",
+    "uvicorn>=0.30.6",
+]
+
+[tool.uv.workspace]
+members = ["foo"]
